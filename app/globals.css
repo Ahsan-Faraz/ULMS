@@ -7,6 +7,10 @@
     --radius: 0.5rem;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
   .hide-scrollbar::-webkit-scrollbar {
     width: 0px;
     height: 0px;
@@ -85,7 +89,7 @@
 
   /* Book List */
   .book-list {
-    @apply mt-10 flex flex-wrap gap-5 max-xs:justify-between xs:gap-10;
+    @apply mt-10 flex w-full flex-wrap gap-5 max-xs:justify-between xs:gap-10;
   }
 
   /* Book Overview */
