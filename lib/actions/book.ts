@@ -4,13 +4,20 @@ import { db } from "@/database/drizzle";
 import { books, borrowRecords, users } from "@/database/schema";
 import { and, eq } from "drizzle-orm";
 import dayjs from "dayjs";
+import { sendEmail } from "@/lib/workflow";
+import { appUrl, borrowReceiptEmail } from "@/lib/email";
+import { formatDate } from "@/lib/utils";
 
 export const borrowBook = async (params: BorrowBookParams) => {
   const { userId, bookId } = params;
 
   try {
     const [user] = await db
-      .select({ status: users.status })
+      .select({
+        status: users.status,
+        email: users.email,
+        fullName: users.fullName,
+      })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1);
@@ -22,12 +29,17 @@ export const borrowBook = async (params: BorrowBookParams) => {
     if (user.status !== "APPROVED") {
       return {
         success: false,
-        error: "Your account is not approved yet. An admin must approve you before you can borrow.",
+        error:
+          "Your account is not approved yet. An admin must approve you before you can borrow.",
       };
     }
 
     const [book] = await db
-      .select({ availableCopies: books.availableCopies })
+      .select({
+        availableCopies: books.availableCopies,
+        title: books.title,
+        author: books.author,
+      })
       .from(books)
       .where(eq(books.id, bookId))
       .limit(1);
@@ -60,19 +72,42 @@ export const borrowBook = async (params: BorrowBookParams) => {
 
     const dueDate = dayjs().add(7, "day").format("YYYY-MM-DD");
 
-    await db.insert(borrowRecords).values({
-      userId,
-      bookId,
-      dueDate,
-      status: "BORROWED",
-    });
+    const [record] = await db
+      .insert(borrowRecords)
+      .values({
+        userId,
+        bookId,
+        dueDate,
+        status: "BORROWED",
+      })
+      .returning({
+        id: borrowRecords.id,
+        borrowDate: borrowRecords.borrowDate,
+      });
 
     await db
       .update(books)
       .set({ availableCopies: book.availableCopies - 1 })
       .where(eq(books.id, bookId));
 
-    return { success: true };
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: `Receipt: ${book.title}`,
+        message: borrowReceiptEmail({
+          fullName: user.fullName,
+          title: book.title,
+          author: book.author,
+          borrowDate: formatDate(record.borrowDate),
+          dueDate: formatDate(dueDate),
+          receiptUrl: `${appUrl()}/receipts/${record.id}`,
+        }),
+      });
+    } catch (error) {
+      console.log(error, "Borrow receipt email skipped");
+    }
+
+    return { success: true, borrowId: record.id };
   } catch (error) {
     console.log(error);
 

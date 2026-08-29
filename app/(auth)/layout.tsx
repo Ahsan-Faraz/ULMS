@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import Image from "next/image";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import BrandMark from "@/components/BrandMark";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
@@ -12,23 +12,25 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     <main className="auth-container">
       <section className="auth-form">
         <div className="auth-box">
-          <div className="flex flex-row gap-3">
-            <Image src="/icons/logo.svg" alt="logo" width={37} height={37} />
-            <h1 className="text-2xl font-semibold text-white">BookWise</h1>
-          </div>
+          <BrandMark href="/sign-in" />
 
           <div>{children}</div>
         </div>
       </section>
 
       <section className="auth-illustration">
-        <Image
-          src="/images/auth-illustration.png"
-          alt="auth illustration"
-          height={1000}
-          width={1000}
-          className="size-full object-cover"
-        />
+        <div className="flex size-full flex-col justify-end bg-primary-admin p-10 text-white sm:p-16">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
+            Campus library
+          </p>
+          <h2 className="mt-4 font-serif text-4xl font-semibold leading-tight sm:text-5xl">
+            Borrow the next book. Keep the shelf moving.
+          </h2>
+          <p className="mt-4 max-w-md text-white/80">
+            Browse the catalog, request titles, and manage loans from one calm
+            reading room.
+          </p>
+        </div>
       </section>
     </main>
   );

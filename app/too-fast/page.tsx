@@ -1,17 +1,17 @@
-import React from "react";
+import { APP_NAME } from "@/lib/brand";
 
 const Page = () => {
   return (
     <main className="root-container flex min-h-screen flex-col items-center justify-center">
-      <h1 className="font-bebas-neue text-5xl font-bold text-light-100">
-        Whoa, Slow Down There, Speedy!
+      <h1 className="font-serif text-5xl font-semibold text-dark-100">
+        Slow down there.
       </h1>
-      <p className="mt-3 max-w-xl text-center text-light-400">
-        Looks like you&apos;ve been a little too eager. We&apos;ve put a
-        temporary pause on your excitement. 🚦 Chill for a bit, and try again
-        shortly
+      <p className="mt-3 max-w-xl text-center text-light-100">
+        {APP_NAME} paused this request because too many attempts came from your
+        network. Wait a moment, then try again.
       </p>
     </main>
   );
 };
+
 export default Page;

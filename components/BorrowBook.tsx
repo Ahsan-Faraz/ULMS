@@ -45,7 +45,7 @@ const BorrowBook = ({
           description: "Book borrowed successfully",
         });
 
-        router.push("/");
+        router.push("/my-profile");
       } else {
         toast({
           title: "Error",
@@ -70,8 +70,14 @@ const BorrowBook = ({
       onClick={handleBorrowBook}
       disabled={borrowing}
     >
-      <Image src="/icons/book.svg" alt="book" width={20} height={20} />
-      <p className="font-bebas-neue text-xl text-dark-100">
+      <Image
+        src="/icons/book.svg"
+        alt="book"
+        width={20}
+        height={20}
+        className="brightness-0 invert"
+      />
+      <p className="font-serif text-xl text-white">
         {borrowing ? "Borrowing ..." : "Borrow Book"}
       </p>
     </Button>

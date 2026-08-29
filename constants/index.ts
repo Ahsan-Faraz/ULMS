@@ -55,6 +55,14 @@ export const FIELD_TYPES = {
   password: "password",
 };
 
+export const LIBRARY_SORTS = [
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+  { value: "title", label: "Title A–Z" },
+  { value: "rating", label: "Highest rated" },
+  { value: "available", label: "Most available" },
+] as const;
+
 export const sampleBooks: Book[] = [
   {
     id: "1",

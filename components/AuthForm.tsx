@@ -26,6 +26,7 @@ import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import FileUpload from "@/components/FileUpload";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { APP_NAME } from "@/lib/brand";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -82,8 +83,8 @@ const AuthForm = <T extends FieldValues>({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold text-white">
-        {isSignIn ? "Welcome back to BookWise" : "Create your library account"}
+      <h1 className="font-serif text-2xl font-semibold text-dark-100">
+        {isSignIn ? `Welcome back to ${APP_NAME}` : "Create your library account"}
       </h1>
       <p className="text-light-100">
         {isSignIn
@@ -102,7 +103,7 @@ const AuthForm = <T extends FieldValues>({
               name={field as Path<T>}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="capitalize">
+                  <FormLabel className="capitalize text-dark-100">
                     {FIELD_NAMES[field.name as keyof typeof FIELD_NAMES]}
                   </FormLabel>
                   <FormControl>
@@ -112,7 +113,7 @@ const AuthForm = <T extends FieldValues>({
                         accept="image/*"
                         placeholder="Upload your ID"
                         folder="ids"
-                        variant="dark"
+                        variant="light"
                         onFileChange={field.onChange}
                       />
                     ) : (
@@ -126,7 +127,7 @@ const AuthForm = <T extends FieldValues>({
                       />
                     )}
                   </FormControl>
-                  <FormMessage className="text-red-400" />
+                  <FormMessage className="text-red-600" />
                 </FormItem>
               )}
             />
@@ -139,7 +140,7 @@ const AuthForm = <T extends FieldValues>({
       </Form>
 
       <p className="text-center text-base font-medium">
-        {isSignIn ? "New to BookWise? " : "Already have an account? "}
+        {isSignIn ? `New to ${APP_NAME}? ` : "Already have an account? "}
 
         <Link
           href={isSignIn ? "/sign-up" : "/sign-in"}

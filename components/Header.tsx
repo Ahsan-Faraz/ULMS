@@ -1,10 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import { signOut, auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import BrandMark from "@/components/BrandMark";
+import HeaderNav from "@/components/HeaderNav";
 
 const Header = async () => {
   const session = await auth();
@@ -21,16 +22,17 @@ const Header = async () => {
   }
 
   return (
-    <header className="my-10 flex justify-between gap-5">
-      <Link href="/">
-        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
-      </Link>
+    <header className="no-print my-10 flex flex-wrap items-center justify-between gap-5">
+      <div className="flex items-center gap-8">
+        <BrandMark />
+        <HeaderNav />
+      </div>
 
-      <ul className="flex flex-row items-center gap-4 sm:gap-8">
+      <ul className="flex flex-row items-center gap-3 sm:gap-4">
         {isAdmin ? (
           <li>
-            <Button asChild className="bg-primary text-dark-100 hover:bg-primary/90">
-              <Link href="/admin">Admin Panel</Link>
+            <Button asChild className="bg-primary text-white hover:bg-primary/90">
+              <Link href="/admin">Admin</Link>
             </Button>
           </li>
         ) : null}
@@ -42,7 +44,12 @@ const Header = async () => {
               await signOut();
             }}
           >
-            <Button>Logout</Button>
+            <Button
+              variant="outline"
+              className="border-light-400 bg-light-600 text-dark-100 hover:bg-light-400"
+            >
+              Logout
+            </Button>
           </form>
         </li>
       </ul>

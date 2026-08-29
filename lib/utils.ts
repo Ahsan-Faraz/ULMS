@@ -23,3 +23,22 @@ export const formatDate = (value?: string | Date | null) => {
     year: "numeric",
   });
 };
+
+export const getDueLabel = (dueDate?: string | Date | null) => {
+  if (!dueDate) return "Due date unavailable";
+
+  const due = new Date(dueDate);
+  if (Number.isNaN(due.getTime())) return "Due date unavailable";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+
+  const diff = Math.round((due.getTime() - today.getTime()) / 86_400_000);
+
+  if (diff > 1) return `${diff} days left to return`;
+  if (diff === 1) return "Due tomorrow";
+  if (diff === 0) return "Due today";
+  if (diff === -1) return "1 day overdue";
+  return `${Math.abs(diff)} days overdue`;
+};

@@ -2,31 +2,27 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-import localFont from "next/font/local";
+import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/brand";
 
-const ibmPlexSans = localFont({
-  src: [
-    { path: "/fonts/IBMPlexSans-Regular.ttf", weight: "400", style: "normal" },
-    { path: "/fonts/IBMPlexSans-Medium.ttf", weight: "500", style: "normal" },
-    { path: "/fonts/IBMPlexSans-SemiBold.ttf", weight: "600", style: "normal" },
-    { path: "/fonts/IBMPlexSans-Bold.ttf", weight: "700", style: "normal" },
-  ],
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-ibm-plex-sans",
 });
 
-const bebasNeue = localFont({
-  src: [
-    { path: "/fonts/BebasNeue-Regular.ttf", weight: "400", style: "normal" },
-  ],
-  variable: "--bebas-neue",
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-serif",
 });
 
 export const metadata: Metadata = {
-  title: "BookWise",
-  description:
-    "BookWise is a book borrowing university library management solution.",
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
 };
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
@@ -36,7 +32,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
     <html lang="en" suppressHydrationWarning>
       <SessionProvider session={session}>
         <body
-          className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
+          className={`${ibmPlexSans.variable} ${sourceSerif.variable} ${ibmPlexSans.className} antialiased`}
           suppressHydrationWarning
         >
           {children}

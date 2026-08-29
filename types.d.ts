@@ -13,6 +13,11 @@ interface Book {
   summary: string;
   createdAt?: Date | null;
   isLoanedBook?: boolean;
+  borrowId?: string;
+  dueDate?: string | Date | null;
+  borrowDate?: string | Date | null;
+  returnDate?: string | Date | null;
+  borrowStatus?: "BORROWED" | "RETURNED";
 }
 
 interface AuthCredentials {

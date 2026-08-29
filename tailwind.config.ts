@@ -10,8 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        "ibm-plex-sans": ["IBM Plex Sans", "sans-serif"],
-        "bebas-neue": ["var(--bebas-neue)"],
+        "ibm-plex-sans": ["var(--font-ibm-plex-sans)", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        "bebas-neue": ["var(--font-serif)", "Georgia", "serif"],
       },
       colors: {
         background: "hsl(var(--background))",
@@ -55,8 +56,8 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
         primary: {
-          DEFAULT: "#E7C9A5",
-          admin: "#25388C",
+          DEFAULT: "#B4532A",
+          admin: "#2F5D50",
         },
         green: {
           DEFAULT: "#027A48",
@@ -75,24 +76,24 @@ export default {
           100: "#0089F1",
         },
         light: {
-          100: "#D6E0FF",
-          200: "#EED1AC",
-          300: "#F8F8FF",
-          400: "#EDF1F1",
-          500: "#8D8D8D",
-          600: "#F9FAFB",
-          700: "#E2E8F0",
-          800: "#F8FAFC",
+          100: "#6B645C",
+          200: "#9A3412",
+          300: "#F6F1E8",
+          400: "#E8DFD2",
+          500: "#8A837A",
+          600: "#FFFBF5",
+          700: "#E8DFD2",
+          800: "#FAF7F2",
         },
         dark: {
-          100: "#16191E",
-          200: "#3A354E",
-          300: "#232839",
-          400: "#1E293B",
-          500: "#0F172A",
-          600: "#333C5C",
-          700: "#464F6F",
-          800: "#1E2230",
+          100: "#1C1916",
+          200: "#3F3A34",
+          300: "#EDE6D9",
+          400: "#1C1916",
+          500: "#14110E",
+          600: "#5C564E",
+          700: "#6B645C",
+          800: "#2A2622",
         },
         gray: {
           100: "#CBD5E1",

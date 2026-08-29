@@ -29,16 +29,16 @@
 
 @layer components {
   .form-btn {
-    @apply bg-primary text-dark-100 hover:bg-primary inline-flex min-h-14 w-full items-center justify-center rounded-md px-6 py-2 font-bold text-base !important;
+    @apply bg-primary text-white hover:bg-primary/90 inline-flex min-h-14 w-full items-center justify-center rounded-md px-6 py-2 font-bold text-base !important;
   }
 
   .form-input {
-    @apply w-full min-h-14 border-none text-base font-bold placeholder:font-normal text-white placeholder:text-light-100 focus-visible:ring-0 focus-visible:shadow-none bg-dark-300 !important;
+    @apply w-full min-h-14 border border-light-400 text-base font-bold placeholder:font-normal text-dark-100 placeholder:text-light-100 focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:shadow-none bg-light-600 !important;
   }
 
   /* Book Card */
   .book-title {
-    @apply mt-2 line-clamp-1 text-base font-semibold text-white xs:text-xl;
+    @apply mt-2 line-clamp-1 text-base font-semibold text-dark-100 xs:text-xl;
   }
 
   .book-genre {
@@ -50,12 +50,12 @@
   }
 
   .book-btn {
-    @apply bg-dark-600 mt-3 min-h-14 w-full font-bebas-neue text-base text-primary;
+    @apply bg-primary mt-3 min-h-12 w-full font-serif text-base text-white hover:bg-primary/90;
   }
 
   /* Borrowed Book */
   .borrowed-book {
-    @apply gradient-vertical p-5 rounded-2xl xs:w-min w-full relative;
+    @apply bg-light-600 border border-light-400 p-5 rounded-2xl xs:w-min w-full relative;
   }
 
   .borrowed-book_cover {
@@ -94,7 +94,7 @@
   }
 
   .book-overview h1 {
-    @apply text-5xl font-semibold text-white md:text-7xl;
+    @apply font-serif text-5xl font-semibold text-dark-100 md:text-7xl;
   }
 
   .book-info {
@@ -118,7 +118,7 @@
   }
 
   .book-overview_btn {
-    @apply mt-4 min-h-14 w-fit bg-primary text-dark-100 hover:bg-primary/90 max-md:w-full !important;
+    @apply mt-4 min-h-14 w-fit bg-primary text-white hover:bg-primary/90 max-md:w-full !important;
   }
 
   /* File Upload */
@@ -131,16 +131,16 @@
   }
 
   .progress {
-    @apply rounded-full bg-green-800 p-0.5 text-center font-bebas-neue text-[8px] font-bold leading-none text-light-100;
+    @apply rounded-full bg-green-800 p-0.5 text-center font-serif text-[8px] font-bold leading-none text-white;
   }
 
   /* Search */
   .search {
-    @apply relative mt-10 flex min-h-14 w-full items-center rounded-xl bg-dark-300 px-4;
+    @apply relative mt-10 flex min-h-14 w-full items-center rounded-xl border border-light-400 bg-light-600 px-4;
   }
 
   .search-input {
-    @apply w-full border-none font-bold placeholder:font-normal text-white placeholder:text-light-100 focus-visible:ring-0 focus-visible:shadow-none !important;
+    @apply w-full border-none font-bold placeholder:font-normal text-dark-100 placeholder:text-light-100 focus-visible:ring-0 focus-visible:shadow-none !important;
   }
 
   /* Book Receipt */
@@ -183,7 +183,7 @@
   }
 
   #not-found h4 {
-    @apply text-white mt-6 font-semibold text-2xl;
+    @apply text-dark-100 mt-6 font-semibold text-2xl;
   }
 
   #not-found p {
@@ -191,7 +191,7 @@
   }
 
   .not-found-btn {
-    @apply bg-primary font-bebas-neue min-w-[360px] mt-6 text-dark-100 text-xl hover:bg-primary/90 min-h-12 !important;
+    @apply bg-primary font-serif min-w-[360px] mt-6 text-white text-xl hover:bg-primary/90 min-h-12 !important;
   }
 
   /* Pagination */
@@ -213,42 +213,46 @@
 
   /* Sort */
   .select-trigger {
-    @apply w-40 h-10 px-4 bg-dark-300 text-light-100 border-dark-100 !important;
+    @apply w-40 h-10 px-4 bg-light-600 text-dark-100 border-light-400 !important;
   }
 
   .select-content {
-    @apply bg-dark-300 text-light-100 border-dark-100 !important;
+    @apply bg-light-600 text-dark-100 border-light-400 !important;
   }
 
   .select-item {
-    @apply focus:bg-dark-600 focus:text-light-100 !important;
+    @apply focus:bg-light-300 focus:text-dark-100 !important;
+  }
+
+  .library-select {
+    @apply h-12 rounded-xl border border-light-400 bg-light-600 px-3 text-sm font-medium text-dark-100 outline-none focus:ring-1 focus:ring-primary/30;
   }
 }
 
 @layer utilities {
   .gradient-vertical {
-    background: linear-gradient(180deg, #12141d 0%, #12151f 100%);
+    background: #fffbf5;
   }
 
   .gradient-gray {
-    background: linear-gradient(270deg, #37363a 0%, #353637 100%);
+    background: #ede6d9;
   }
 
   .gradient-blue {
-    background: linear-gradient(180deg, #232839 0%, #12141d 100%);
+    background: #f6f1e8;
   }
 
   /* Auth */
   .auth-container {
-    @apply relative flex flex-col-reverse text-light-100 sm:flex-row;
+    @apply relative flex flex-col-reverse text-dark-100 sm:flex-row;
   }
 
   .auth-form {
-    @apply my-auto flex h-full min-h-screen flex-1 items-center bg-pattern bg-cover bg-top bg-dark-100 px-5 py-10;
+    @apply my-auto flex h-full min-h-screen flex-1 items-center bg-light-300 px-5 py-10;
   }
 
   .auth-box {
-    @apply gradient-vertical mx-auto flex max-w-xl flex-col gap-6 rounded-lg p-10;
+    @apply mx-auto flex max-w-xl flex-col gap-6 rounded-2xl border border-light-400 bg-light-600 p-10;
   }
 
   .auth-illustration {
@@ -257,7 +261,7 @@
 
   /* Root */
   .root-container {
-    @apply flex min-h-screen flex-1 flex-col bg-pattern bg-cover bg-top bg-dark-100 px-5 xs:px-10 md:px-16;
+    @apply flex min-h-screen flex-1 flex-col bg-light-300 px-5 xs:px-10 md:px-16;
   }
 
   /* Book Details */
@@ -275,11 +279,22 @@
   }
 
   .library-subtitle {
-    @apply text-lg font-semibold uppercase text-light-100;
+    @apply text-sm font-semibold uppercase tracking-[0.18em] text-primary;
   }
 
   .library-title {
-    @apply mt-2 text-3xl font-semibold text-white xs:text-5xl;
+    @apply mt-2 font-serif text-3xl font-semibold text-dark-100 xs:text-5xl;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .root-container {
+    background: white;
+    padding: 0;
   }
 }
 

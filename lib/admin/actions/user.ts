@@ -36,12 +36,12 @@ export const updateAccountStatus = async (
         email: user.email,
         subject:
           status === "APPROVED"
-            ? "Your BookWise account was approved"
-            : "Your BookWise account request was declined",
+            ? "Your Folio account was approved"
+            : "Your Folio account request was declined",
         message:
           status === "APPROVED"
-            ? `<p>Hi ${user.fullName},</p><p>Your university library account has been approved. You can now borrow books from BookWise.</p>`
-            : `<p>Hi ${user.fullName},</p><p>Your BookWise account request was not approved. Please contact the library if you think this is a mistake.</p>`,
+            ? `<p>Hi ${user.fullName},</p><p>Your library account has been approved. You can now borrow books from Folio.</p>`
+            : `<p>Hi ${user.fullName},</p><p>Your Folio account request was not approved. Please contact the library if you think this is a mistake.</p>`,
       });
     } catch (error) {
       console.log(error, "Account status email skipped");
