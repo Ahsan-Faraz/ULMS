@@ -5,15 +5,30 @@ import { books } from "@/database/schema";
 import { auth } from "@/auth";
 import { desc } from "drizzle-orm";
 import Link from "next/link";
+import {
+  getPopularBooks,
+  getRecommendedBooks,
+} from "@/lib/recommendations";
 
 const Home = async () => {
   const session = await auth();
+  const userId = session?.user?.id as string | undefined;
 
-  const latestBooks = (await db
-    .select()
-    .from(books)
-    .limit(10)
-    .orderBy(desc(books.createdAt))) as Book[];
+  const [latestBooks, recommendations] = await Promise.all([
+    db
+      .select()
+      .from(books)
+      .limit(10)
+      .orderBy(desc(books.createdAt))
+      .then((rows) => rows as Book[]),
+    userId
+      ? getRecommendedBooks(userId, 6)
+      : getPopularBooks(6).then((rows) => ({
+          books: rows,
+          reason: "popular" as const,
+          seedTitle: null,
+        })),
+  ]);
 
   if (latestBooks.length === 0) {
     return (
@@ -34,9 +49,28 @@ const Home = async () => {
       <BookOverview {...latestBooks[0]} userId={session?.user?.id as string} />
 
       <BookList
+        title={
+          recommendations.reason === "popular"
+            ? "Popular on campus"
+            : "Picked for you"
+        }
+        subtitle={
+          recommendations.seedTitle
+            ? `Based on ${recommendations.seedTitle}`
+            : recommendations.reason === "popular"
+              ? "Most borrowed titles right now"
+              : undefined
+        }
+        books={recommendations.books.filter(
+          (book) => book.id !== latestBooks[0].id,
+        )}
+        containerClassName="mt-28"
+      />
+
+      <BookList
         title="Latest Books"
         books={latestBooks.slice(1)}
-        containerClassName="mt-28"
+        containerClassName="mt-20"
       />
 
       <div className="mt-12">

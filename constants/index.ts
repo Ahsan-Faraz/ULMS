@@ -73,6 +73,7 @@ export const FIELD_TYPES = {
 };
 
 export const LIBRARY_SORTS = [
+  { value: "relevance", label: "Best match" },
   { value: "newest", label: "Newest" },
   { value: "oldest", label: "Oldest" },
   { value: "title", label: "Title A–Z" },

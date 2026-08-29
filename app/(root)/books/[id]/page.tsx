@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getSimilarBooks } from "@/lib/library";
+import { getAlsoBorrowed } from "@/lib/recommendations";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
@@ -20,7 +21,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (!bookDetails) redirect("/404");
 
-  const similarBooks = await getSimilarBooks(id, bookDetails.genre);
+  const [similarBooks, alsoBorrowed] = await Promise.all([
+    getSimilarBooks(id, bookDetails.genre),
+    getAlsoBorrowed(id, 6),
+  ]);
+  const alsoBorrowedIds = new Set(alsoBorrowed.map((book) => book.id));
+  const moreInGenre = similarBooks.filter((book) => !alsoBorrowedIds.has(book.id));
 
   return (
     <>
@@ -44,11 +50,16 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           </section>
         </div>
 
-        <BookList
-          title="More in this genre"
-          books={similarBooks}
-          containerClassName="flex-1"
-        />
+        <div className="flex-1 space-y-16">
+          <BookList
+            title="Readers also borrowed"
+            books={alsoBorrowed}
+          />
+          <BookList
+            title="More in this genre"
+            books={moreInGenre}
+          />
+        </div>
       </div>
     </>
   );

@@ -42,6 +42,9 @@ const Page = async ({
 
       <p className="mt-6 text-sm text-light-100">
         {catalog.total} {catalog.total === 1 ? "title" : "titles"}
+        {params.q && params.sort === "relevance"
+          ? " · ranked by best match"
+          : ""}
       </p>
 
       {catalog.books.length === 0 ? (

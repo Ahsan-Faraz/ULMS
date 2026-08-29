@@ -1,10 +1,16 @@
 import { db } from "@/database/drizzle";
 import { books } from "@/database/schema";
-import { and, asc, count, desc, eq, ilike, ne, or } from "drizzle-orm";
+import {
+  catalogSearchDocument,
+  catalogSearchRank,
+  prefixTsQuery,
+} from "@/lib/search";
+import { and, asc, count, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 
 export const LIBRARY_PAGE_SIZE = 12;
 
 export type LibrarySort =
+  | "relevance"
   | "newest"
   | "oldest"
   | "title"
@@ -20,15 +26,17 @@ export const parseLibraryParams = (searchParams: {
   const q = searchParams.q?.trim() ?? "";
   const genre = searchParams.genre?.trim() ?? "all";
   const allowed: LibrarySort[] = [
+    "relevance",
     "newest",
     "oldest",
     "title",
     "rating",
     "available",
   ];
+  const fallback: LibrarySort = q ? "relevance" : "newest";
   const sort = allowed.includes(searchParams.sort as LibrarySort)
     ? (searchParams.sort as LibrarySort)
-    : "newest";
+    : fallback;
   const page = Math.max(1, Number(searchParams.page) || 1);
 
   return { q, genre, sort, page };
@@ -44,6 +52,18 @@ export async function getLibraryGenres() {
   return rows.map((row) => row.genre).filter(Boolean);
 }
 
+const likeFilters = (term: string) => {
+  const pattern = `%${term}%`;
+  return or(
+    ilike(books.title, pattern),
+    ilike(books.author, pattern),
+    ilike(books.genre, pattern),
+    ilike(books.summary, pattern),
+    ilike(books.description, pattern),
+    ilike(books.isbn, pattern),
+  );
+};
+
 export async function getLibraryBooks({
   q,
   genre,
@@ -58,12 +78,14 @@ export async function getLibraryBooks({
   const filters = [];
 
   if (q) {
-    const term = `%${q}%`;
-    const search = or(
-      ilike(books.title, term),
-      ilike(books.author, term),
-      ilike(books.genre, term),
-    );
+    const prefix = prefixTsQuery(q);
+    const fuzzy = likeFilters(q);
+    const search = prefix
+      ? or(
+          sql`${catalogSearchDocument} @@ to_tsquery('english', ${prefix})`,
+          fuzzy,
+        )
+      : fuzzy;
     if (search) filters.push(search);
   }
 
@@ -72,14 +94,19 @@ export async function getLibraryBooks({
   }
 
   const where = filters.length ? and(...filters) : undefined;
+  const rank = catalogSearchRank(q);
 
-  const orderBy = {
-    newest: desc(books.createdAt),
-    oldest: asc(books.createdAt),
-    title: asc(books.title),
-    rating: desc(books.rating),
-    available: desc(books.availableCopies),
-  }[sort];
+  const orderBy =
+    q && sort === "relevance"
+      ? [desc(rank), desc(books.createdAt)]
+      : {
+          relevance: [desc(books.createdAt)],
+          newest: [desc(books.createdAt)],
+          oldest: [asc(books.createdAt)],
+          title: [asc(books.title)],
+          rating: [desc(books.rating)],
+          available: [desc(books.availableCopies)],
+        }[sort];
 
   const [totalRow] = await db
     .select({ value: count() })
@@ -90,7 +117,7 @@ export async function getLibraryBooks({
     .select()
     .from(books)
     .where(where)
-    .orderBy(orderBy)
+    .orderBy(...orderBy)
     .limit(LIBRARY_PAGE_SIZE)
     .offset((page - 1) * LIBRARY_PAGE_SIZE);
 
