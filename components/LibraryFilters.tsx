@@ -19,6 +19,7 @@ const LibraryFilters = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(q);
+  const [lockAutofill, setLockAutofill] = useState(true);
 
   useEffect(() => {
     setQuery(q);
@@ -58,16 +59,29 @@ const LibraryFilters = ({
     >
       <div className="search mt-0 flex-1">
         <input
-          name="catalogQuery"
+          type="text"
+          tabIndex={-1}
+          aria-hidden="true"
+          autoComplete="off"
+          className="pointer-events-none absolute h-0 w-0 opacity-0"
+        />
+        <input
+          type="text"
+          name="libris-catalog"
           value={query}
+          readOnly={lockAutofill}
+          onFocus={() => setLockAutofill(false)}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search titles, authors, or topics"
           className="search-input"
           autoComplete="off"
           autoCorrect="off"
-          autoCapitalize="off"
+          autoCapitalize="none"
           spellCheck={false}
-          role="searchbox"
+          aria-autocomplete="none"
+          data-lpignore="true"
+          data-1p-ignore="true"
+          data-form-type="other"
         />
       </div>
 
