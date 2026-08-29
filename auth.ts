@@ -3,7 +3,7 @@ import { compare } from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -20,7 +20,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const user = await db
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email.toString()))
+          .where(ilike(users.email, credentials.email.toString().trim()))
           .limit(1);
 
         if (user.length === 0) return null;

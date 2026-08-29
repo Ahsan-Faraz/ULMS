@@ -30,7 +30,12 @@ import { useRouter } from "next/navigation";
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
   defaultValues: T;
-  onSubmit: (data: T) => Promise<{ success: boolean; error?: string }>;
+  onSubmit: (data: T) => Promise<{
+    success: boolean;
+    error?: string;
+    redirectTo?: string;
+    fieldErrors?: Partial<Record<string, string>>;
+  }>;
   type: "SIGN_IN" | "SIGN_UP";
 }
 
@@ -60,7 +65,12 @@ const AuthForm = <T extends FieldValues>({
           : "You have successfully signed up.",
       });
 
-      router.push("/");
+      router.push(result.redirectTo ?? "/");
+    } else if (result.fieldErrors) {
+      Object.entries(result.fieldErrors).forEach(([name, message]) => {
+        if (!message) return;
+        form.setError(name as Path<T>, { type: "server", message });
+      });
     } else {
       toast({
         title: `Error ${isSignIn ? "signing in" : "signing up"}`,
@@ -116,7 +126,7 @@ const AuthForm = <T extends FieldValues>({
                       />
                     )}
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />

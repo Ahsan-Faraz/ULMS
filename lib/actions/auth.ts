@@ -1,9 +1,9 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
 import ratelimit from "@/lib/ratelimit";
@@ -35,6 +35,28 @@ export const signInWithCredentials = async (
   if (!success) return redirect("/too-fast");
 
   try {
+    const [account] = await db
+      .select()
+      .from(users)
+      .where(ilike(users.email, email.trim()))
+      .limit(1);
+
+    if (!account) {
+      return {
+        success: false,
+        fieldErrors: { email: "No account found with this email" },
+      };
+    }
+
+    const isPasswordValid = await compare(password, account.password);
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        fieldErrors: { password: "Incorrect password" },
+      };
+    }
+
     const result = await signIn("credentials", {
       email,
       password,
@@ -45,7 +67,10 @@ export const signInWithCredentials = async (
       return { success: false, error: result.error };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      redirectTo: account.role === "ADMIN" ? "/admin" : "/",
+    };
   } catch (error) {
     console.log(error, "Signin error");
     return { success: false, error: "Signin error" };
@@ -67,7 +92,10 @@ export const signUp = async (params: AuthCredentials) => {
     .limit(1);
 
   if (existingUser.length > 0) {
-    return { success: false, error: "User already exists" };
+    return {
+      success: false,
+      fieldErrors: { email: "An account with this email already exists" },
+    };
   }
 
   const hashedPassword = await hash(password, 10);
@@ -75,7 +103,7 @@ export const signUp = async (params: AuthCredentials) => {
   try {
     await db.insert(users).values({
       fullName,
-      email,
+      email: email.trim(),
       universityId,
       password: hashedPassword,
       universityCard,
