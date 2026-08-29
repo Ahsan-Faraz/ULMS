@@ -97,7 +97,7 @@ export const signUp = async (params: AuthCredentials) => {
       }
     } else {
       console.log(
-        "Skipping onboarding workflow: QStash cannot reach localhost. Set NEXT_PUBLIC_PROD_API_ENDPOINT to a public URL (deployed app or ngrok) to enable emails.",
+        "Skipping onboarding workflow: QStash cannot reach localhost. Set PROD_API_ENDPOINT to your public Vercel URL to enable emails.",
       );
     }
 
