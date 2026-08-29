@@ -1,18 +1,35 @@
+"use client";
+
 import { Session } from "next-auth";
+import { usePathname } from "next/navigation";
+import { Suspense } from "react";
+import AdminSearch from "@/components/admin/AdminSearch";
+
+const searchPlaceholder = (path: string) => {
+  if (path.startsWith("/admin/users")) return "Search users by name or email";
+  if (path.startsWith("/admin/account-requests")) return "Search account requests";
+  if (path.startsWith("/admin/book-requests")) return "Search borrow records";
+  if (path.startsWith("/admin/books")) return "Search books by title or author";
+  return "Search books, users, and requests";
+};
 
 const Header = ({ session }: { session: Session }) => {
+  const pathname = usePathname();
+
   return (
     <header className="admin-header">
       <div>
         <h2 className="text-2xl font-semibold text-dark-400">
-          {session?.user?.name}
+          Welcome, {session?.user?.name}
         </h2>
         <p className="text-base text-slate-500">
-          Monitor all of your users and books here
+          Monitor users, books, and borrow activity from one place.
         </p>
       </div>
 
-      {/*<p>Search</p>*/}
+      <Suspense>
+        <AdminSearch placeholder={searchPlaceholder(pathname)} />
+      </Suspense>
     </header>
   );
 };
