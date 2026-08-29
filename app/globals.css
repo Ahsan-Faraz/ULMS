@@ -140,11 +140,25 @@
 
   /* Search */
   .search {
-    @apply relative mt-10 flex min-h-14 w-full items-center rounded-xl border border-light-400 bg-light-600 px-4;
+    @apply relative mt-10 flex min-h-14 w-full items-center rounded-xl border border-light-400 bg-light-600 px-4 outline-none;
+  }
+
+  .search:focus-within {
+    outline: none;
+    box-shadow: none;
   }
 
   .search-input {
-    @apply w-full border-none font-bold placeholder:font-normal text-dark-100 placeholder:text-light-100 focus-visible:ring-0 focus-visible:shadow-none !important;
+    @apply w-full border-none bg-transparent font-bold text-dark-100 outline-none ring-0 placeholder:font-normal placeholder:text-light-100 !important;
+  }
+
+  .search-input:focus,
+  .search-input:focus-visible,
+  .search-input:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
   }
 
   /* Book Receipt */

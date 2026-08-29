@@ -73,7 +73,7 @@ const LibraryFilters = ({
           onFocus={() => setLockAutofill(false)}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search titles, authors, or topics"
-          className="search-input"
+          className="search-input outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="none"
