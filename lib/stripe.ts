@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { APP_NAME } from "@/lib/brand";
 import { appUrl } from "@/lib/email";
 
 export const stripeEnabled = Boolean(process.env.STRIPE_SECRET_KEY);
@@ -23,7 +24,7 @@ export async function createProCheckout() {
           recurring: { interval: "month" },
           unit_amount: 1900,
           product_data: {
-            name: "Folio Campus Pro",
+            name: `${APP_NAME} Campus Pro`,
             description:
               "Holds, ISBN import, reminders, custom branding, unlimited catalog",
           },

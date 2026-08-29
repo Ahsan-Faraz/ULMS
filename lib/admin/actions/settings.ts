@@ -3,6 +3,7 @@
 import { db } from "@/database/drizzle";
 import { librarySettings } from "@/database/schema";
 import { requireAdmin } from "@/lib/admin/guard";
+import { APP_NAME } from "@/lib/brand";
 import { getLibrarySettings } from "@/lib/settings";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -22,7 +23,7 @@ export const updateLibrarySettings = async (input: {
   try {
     if (current.id === "local") {
       await db.insert(librarySettings).values({
-        name: input.name.trim() || "Folio",
+        name: input.name.trim() || APP_NAME,
         logoUrl: input.logoUrl || null,
         loanDays,
         emailFrom: input.emailFrom?.trim() || null,

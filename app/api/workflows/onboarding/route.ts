@@ -3,6 +3,7 @@ import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { sendEmail } from "@/lib/workflow";
+import { APP_NAME } from "@/lib/brand";
 
 type UserState = "non-active" | "active";
 
@@ -45,7 +46,7 @@ export const { POST } = serve<InitialData>(async (context) => {
   await context.run("new-signup", async () => {
     await sendEmail({
       email,
-        subject: "Welcome to Folio",
+        subject: `Welcome to ${APP_NAME}`,
         message: `Welcome ${fullName}! Your campus library account is ready. Browse the catalog and borrow your next book.`,
     });
   });

@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin/guard";
 import { and, count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/workflow";
+import { APP_NAME } from "@/lib/brand";
 
 const revalidateUsers = () => {
   revalidatePath("/admin");
@@ -36,12 +37,12 @@ export const updateAccountStatus = async (
         email: user.email,
         subject:
           status === "APPROVED"
-            ? "Your Folio account was approved"
-            : "Your Folio account request was declined",
+            ? `Your ${APP_NAME} account was approved`
+            : `Your ${APP_NAME} account request was declined`,
         message:
           status === "APPROVED"
-            ? `<p>Hi ${user.fullName},</p><p>Your library account has been approved. You can now borrow books from Folio.</p>`
-            : `<p>Hi ${user.fullName},</p><p>Your Folio account request was not approved. Please contact the library if you think this is a mistake.</p>`,
+            ? `<p>Hi ${user.fullName},</p><p>Your library account has been approved. You can now borrow books from ${APP_NAME}.</p>`
+            : `<p>Hi ${user.fullName},</p><p>Your ${APP_NAME} account request was not approved. Please contact the library if you think this is a mistake.</p>`,
       });
     } catch (error) {
       console.log(error, "Account status email skipped");

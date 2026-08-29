@@ -23,7 +23,7 @@ const StatusBadge = ({
   return (
     <span
       className={cn(
-        "inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize",
+        "inline-flex h-fit shrink-0 self-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold capitalize",
         styles[value] ?? "bg-light-400 text-dark-400",
         className,
       )}

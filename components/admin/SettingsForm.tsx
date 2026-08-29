@@ -86,7 +86,7 @@ const SettingsForm = ({
             name="emailFrom"
             defaultValue={emailFrom ?? ""}
             className="book-form_input mt-1"
-            placeholder="Folio Library <you@domain.com>"
+            placeholder="Libris Library <you@domain.com>"
           />
         </label>
         <p className="text-xs text-light-500">

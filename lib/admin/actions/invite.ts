@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/admin/guard";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/workflow";
+import { APP_NAME } from "@/lib/brand";
 import { appUrl, staffInviteEmail } from "@/lib/email";
 import dayjs from "dayjs";
 
@@ -43,7 +44,7 @@ export const inviteStaff = async (email: string, role: "ADMIN" | "LIBRARIAN") =>
   try {
     await sendEmail({
       email: trimmed,
-      subject: "You are invited to Folio staff",
+      subject: `You are invited to ${APP_NAME} staff`,
       message: staffInviteEmail({
         role: role === "ADMIN" ? "Admin" : "Librarian",
         inviteUrl: `${appUrl()}/invite/${token}`,

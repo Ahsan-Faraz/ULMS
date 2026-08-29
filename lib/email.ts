@@ -72,7 +72,7 @@ export const staffInviteEmail = (params: {
   inviteUrl: string;
 }) =>
   wrap(
-    "You are invited to Folio staff",
+    `You are invited to ${APP_NAME} staff`,
     `<p>You have been invited as a <strong>${params.role}</strong>.</p>
      <p><a href="${params.inviteUrl}" style="color:#B4532A;">Accept the invitation</a></p>
      <p>This link expires in 7 days.</p>`,

@@ -27,7 +27,7 @@ const Layout = async ({ children }: { children: ReactNode }) => {
   const brand = await getBranding();
 
   return (
-    <main className="flex min-h-screen w-full flex-row overflow-x-hidden">
+    <main className="flex h-dvh w-full flex-row overflow-hidden">
       <Sidebar
         session={session}
         role={role}

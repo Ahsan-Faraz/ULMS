@@ -29,9 +29,10 @@ export async function getLibrarySettings(): Promise<LibrarySettings> {
   try {
     const [row] = await db.select().from(librarySettings).limit(1);
     if (row) {
+      const name = row.name === "Folio" || !row.name ? APP_NAME : row.name;
       return {
         id: row.id,
-        name: row.name,
+        name,
         logoUrl: row.logoUrl,
         loanDays: row.loanDays,
         emailFrom: row.emailFrom,
