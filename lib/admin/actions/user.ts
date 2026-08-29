@@ -55,7 +55,10 @@ export const updateAccountStatus = async (
   }
 };
 
-export const updateUserRole = async (userId: string, role: "USER" | "ADMIN") => {
+export const updateUserRole = async (
+  userId: string,
+  role: "USER" | "ADMIN" | "LIBRARIAN",
+) => {
   const admin = await requireAdmin();
   if (!admin.ok) return { success: false, message: admin.error };
 
@@ -83,7 +86,12 @@ export const updateUserRole = async (userId: string, role: "USER" | "ADMIN") => 
 
     await db
       .update(users)
-      .set({ role, ...(role === "ADMIN" ? { status: "APPROVED" as const } : {}) })
+      .set({
+        role,
+        ...((role === "ADMIN" || role === "LIBRARIAN")
+          ? { status: "APPROVED" as const }
+          : {}),
+      })
       .where(eq(users.id, userId));
 
     revalidateUsers();

@@ -6,10 +6,12 @@ import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import BrandMark from "@/components/BrandMark";
 import HeaderNav from "@/components/HeaderNav";
+import { getBranding } from "@/lib/settings";
 
 const Header = async () => {
   const session = await auth();
-  let isAdmin = false;
+  const brand = await getBranding();
+  let isStaff = false;
 
   if (session?.user?.id) {
     const [user] = await db
@@ -18,21 +20,21 @@ const Header = async () => {
       .where(eq(users.id, session.user.id))
       .limit(1);
 
-    isAdmin = user?.role === "ADMIN";
+    isStaff = user?.role === "ADMIN" || user?.role === "LIBRARIAN";
   }
 
   return (
     <header className="no-print my-10 flex flex-wrap items-center justify-between gap-5">
       <div className="flex items-center gap-8">
-        <BrandMark />
+        <BrandMark href="/home" name={brand.name} logoUrl={brand.logoUrl} />
         <HeaderNav />
       </div>
 
       <ul className="flex flex-row items-center gap-3 sm:gap-4">
-        {isAdmin ? (
+        {isStaff ? (
           <li>
             <Button asChild className="bg-primary text-white hover:bg-primary/90">
-              <Link href="/admin">Admin</Link>
+              <Link href="/admin">Staff</Link>
             </Button>
           </li>
         ) : null}

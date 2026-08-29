@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/workflow";
 import { dueSoonEmail, overdueEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
 import redis from "@/database/redis";
+import { isPro } from "@/lib/settings";
 
 const isAuthorized = (request: NextRequest) => {
   const secret = process.env.CRON_SECRET;
@@ -29,6 +30,10 @@ const claimReminder = async (kind: "due" | "overdue", id: string) => {
 export async function GET(request: NextRequest) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!(await isPro())) {
+    return NextResponse.json({ ok: true, skipped: "Reminders require Campus Pro" });
   }
 
   const today = dayjs().format("YYYY-MM-DD");

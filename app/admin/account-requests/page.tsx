@@ -6,12 +6,17 @@ import { updateAccountStatus } from "@/lib/admin/actions/user";
 import { formatDate, getInitials } from "@/lib/utils";
 import { mediaSrc } from "@/lib/admin/media";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { requireAdmin } from "@/lib/admin/guard";
+import { redirect } from "next/navigation";
 
 const Page = async ({
   searchParams,
 }: {
   searchParams: Promise<{ query?: string; page?: string }>;
 }) => {
+  const admin = await requireAdmin();
+  if (!admin.ok) redirect("/admin");
+
   const params = parseListParams(await searchParams);
   const { rows, total, totalPages } = await listAccountRequests(params);
 

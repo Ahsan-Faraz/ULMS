@@ -10,6 +10,7 @@ interface Book {
   coverColor: string;
   coverUrl: string;
   videoUrl: string;
+  isbn?: string | null;
   summary: string;
   createdAt?: Date | null;
   isLoanedBook?: boolean;
@@ -18,6 +19,7 @@ interface Book {
   borrowDate?: string | Date | null;
   returnDate?: string | Date | null;
   borrowStatus?: "BORROWED" | "RETURNED";
+  renewed?: boolean;
 }
 
 interface AuthCredentials {
@@ -38,6 +40,7 @@ interface BookParams {
   description: string;
   totalCopies: number;
   videoUrl: string;
+  isbn?: string;
   summary: string;
 }
 

@@ -14,6 +14,7 @@ export async function getBorrowedBooks(userId: string) {
       dueDate: borrowRecords.dueDate,
       returnDate: borrowRecords.returnDate,
       borrowStatus: borrowRecords.status,
+      renewed: borrowRecords.renewed,
       book: books,
     })
     .from(borrowRecords)
@@ -28,6 +29,7 @@ export async function getBorrowedBooks(userId: string) {
     dueDate: record.dueDate,
     returnDate: record.returnDate,
     borrowStatus: record.borrowStatus,
+    renewed: record.renewed,
     isLoanedBook: record.borrowStatus === "BORROWED",
   }));
 }

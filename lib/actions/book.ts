@@ -1,12 +1,13 @@
 "use server";
 
 import { db } from "@/database/drizzle";
-import { books, borrowRecords, users } from "@/database/schema";
+import { books, borrowRecords, holds, users } from "@/database/schema";
 import { and, eq } from "drizzle-orm";
 import dayjs from "dayjs";
 import { sendEmail } from "@/lib/workflow";
 import { appUrl, borrowReceiptEmail } from "@/lib/email";
 import { formatDate } from "@/lib/utils";
+import { getActiveHold, getLoanDays, hasOverdueBlock } from "@/lib/circulation";
 
 export const borrowBook = async (params: BorrowBookParams) => {
   const { userId, bookId } = params;
@@ -34,6 +35,13 @@ export const borrowBook = async (params: BorrowBookParams) => {
       };
     }
 
+    if (await hasOverdueBlock(userId)) {
+      return {
+        success: false,
+        error: "Return your overdue books before borrowing another title.",
+      };
+    }
+
     const [book] = await db
       .select({
         availableCopies: books.availableCopies,
@@ -44,7 +52,14 @@ export const borrowBook = async (params: BorrowBookParams) => {
       .where(eq(books.id, bookId))
       .limit(1);
 
-    if (!book || book.availableCopies <= 0) {
+    if (!book) {
+      return { success: false, error: "Book is not available for borrowing" };
+    }
+
+    const hold = await getActiveHold(userId, bookId);
+    const reserved = hold?.status === "READY";
+
+    if (!reserved && book.availableCopies <= 0) {
       return {
         success: false,
         error: "Book is not available for borrowing",
@@ -70,7 +85,8 @@ export const borrowBook = async (params: BorrowBookParams) => {
       };
     }
 
-    const dueDate = dayjs().add(7, "day").format("YYYY-MM-DD");
+    const loanDays = await getLoanDays();
+    const dueDate = dayjs().add(loanDays, "day").format("YYYY-MM-DD");
 
     const [record] = await db
       .insert(borrowRecords)
@@ -85,10 +101,19 @@ export const borrowBook = async (params: BorrowBookParams) => {
         borrowDate: borrowRecords.borrowDate,
       });
 
-    await db
-      .update(books)
-      .set({ availableCopies: book.availableCopies - 1 })
-      .where(eq(books.id, bookId));
+    if (!reserved) {
+      await db
+        .update(books)
+        .set({ availableCopies: book.availableCopies - 1 })
+        .where(eq(books.id, bookId));
+    }
+
+    if (hold) {
+      await db
+        .update(holds)
+        .set({ status: "FULFILLED" })
+        .where(eq(holds.id, hold.id));
+    }
 
     try {
       await sendEmail({

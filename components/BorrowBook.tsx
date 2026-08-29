@@ -6,69 +6,94 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { borrowBook } from "@/lib/actions/book";
+import { placeHold } from "@/lib/actions/hold";
 
 interface Props {
   userId: string;
   bookId: string;
-  borrowingEligibility: {
-    isEligible: boolean;
-    message: string;
-  };
+  action: "borrow" | "hold" | "ready" | "blocked";
+  message?: string;
+  holdIsPro?: boolean;
 }
 
 const BorrowBook = ({
-  userId,
   bookId,
-  borrowingEligibility: { isEligible, message },
+  userId,
+  action,
+  message,
+  holdIsPro = true,
 }: Props) => {
   const router = useRouter();
-  const [borrowing, setBorrowing] = useState(false);
+  const [pending, setPending] = useState(false);
 
-  const handleBorrowBook = async () => {
-    if (!isEligible) {
+  const run = async () => {
+    if (action === "blocked") {
       toast({
-        title: "Error",
+        title: "Not available",
         description: message,
         variant: "destructive",
       });
       return;
     }
 
-    setBorrowing(true);
-
+    setPending(true);
     try {
+      if (action === "hold") {
+        if (!holdIsPro) {
+          toast({
+            title: "Campus Pro",
+            description: "Holds are included with Campus Pro.",
+          });
+          router.push("/pricing");
+          return;
+        }
+
+        const result = await placeHold(bookId);
+        if (result.success) {
+          toast({ title: "Hold placed", description: "We will email you when a copy is ready." });
+          router.refresh();
+        } else {
+          toast({ title: "Error", description: result.error, variant: "destructive" });
+        }
+        return;
+      }
+
       const result = await borrowBook({ bookId, userId });
-
       if (result.success) {
-        toast({
-          title: "Success",
-          description: "Book borrowed successfully",
-        });
-
+        toast({ title: "Success", description: "Book borrowed successfully" });
         router.push("/my-profile");
       } else {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
+        toast({ title: "Error", description: result.error, variant: "destructive" });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
-        description: "An error occurred while borrowing the book",
+        description: "Something went wrong. Try again.",
         variant: "destructive",
       });
     } finally {
-      setBorrowing(false);
+      setPending(false);
     }
   };
+
+  const label =
+    action === "hold"
+      ? pending
+        ? "Placing hold..."
+        : "Place hold"
+      : action === "ready"
+        ? pending
+          ? "Borrowing..."
+          : "Borrow reserved copy"
+        : pending
+          ? "Borrowing..."
+          : "Borrow book";
 
   return (
     <Button
       className="book-overview_btn"
-      onClick={handleBorrowBook}
-      disabled={borrowing}
+      onClick={run}
+      disabled={pending || action === "blocked"}
     >
       <Image
         src="/icons/book.svg"
@@ -77,9 +102,7 @@ const BorrowBook = ({
         height={20}
         className="brightness-0 invert"
       />
-      <p className="font-serif text-xl text-white">
-        {borrowing ? "Borrowing ..." : "Borrow Book"}
-      </p>
+      <p className="font-serif text-xl text-white">{label}</p>
     </Button>
   );
 };

@@ -69,7 +69,10 @@ export const signInWithCredentials = async (
 
     return {
       success: true,
-      redirectTo: account.role === "ADMIN" ? "/admin" : "/",
+      redirectTo:
+        account.role === "ADMIN" || account.role === "LIBRARIAN"
+          ? "/admin"
+          : "/home",
     };
   } catch (error) {
     console.log(error, "Signin error");
@@ -131,7 +134,7 @@ export const signUp = async (params: AuthCredentials) => {
 
     await signInWithCredentials({ email, password });
 
-    return { success: true };
+    return { success: true, redirectTo: "/home" };
   } catch (error) {
     console.log(error, "Signup error");
     return { success: false, error: "Signup error" };

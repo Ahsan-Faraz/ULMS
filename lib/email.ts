@@ -55,4 +55,27 @@ export const borrowReceiptEmail = (params: {
      <p><a href="${params.receiptUrl}" style="color:#B4532A;">View your receipt in ${APP_NAME}</a></p>`,
   );
 
+export const holdReadyEmail = (params: {
+  fullName: string;
+  title: string;
+  borrowUrl: string;
+}) =>
+  wrap(
+    "Your hold is ready",
+    `<p>Hi ${params.fullName},</p>
+     <p><strong>${params.title}</strong> is ready for you. Borrow it soon so it stays reserved.</p>
+     <p><a href="${params.borrowUrl}" style="color:#B4532A;">Borrow this book</a></p>`,
+  );
+
+export const staffInviteEmail = (params: {
+  role: string;
+  inviteUrl: string;
+}) =>
+  wrap(
+    "You are invited to Folio staff",
+    `<p>You have been invited as a <strong>${params.role}</strong>.</p>
+     <p><a href="${params.inviteUrl}" style="color:#B4532A;">Accept the invitation</a></p>
+     <p>This link expires in 7 days.</p>`,
+  );
+
 export const appUrl = () => config.env.prodApiEndpoint.replace(/\/$/, "");

@@ -1,16 +1,26 @@
 "use server";
 
-import { books, borrowRecords } from "@/database/schema";
+import { books, borrowRecords, holds } from "@/database/schema";
 import { db } from "@/database/drizzle";
-import { requireAdmin } from "@/lib/admin/guard";
+import { requireStaff } from "@/lib/admin/guard";
 import { and, count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { FREE_BOOK_LIMIT, isPro } from "@/lib/settings";
 
 export const createBook = async (params: BookParams) => {
-  const admin = await requireAdmin();
-  if (!admin.ok) return { success: false, message: admin.error };
+  const staff = await requireStaff();
+  if (!staff.ok) return { success: false, message: staff.error };
 
   try {
+    if (!(await isPro())) {
+      const [total] = await db.select({ value: count() }).from(books);
+      if (total.value >= FREE_BOOK_LIMIT) {
+        return {
+          success: false,
+          message: `Campus Free includes ${FREE_BOOK_LIMIT} titles. Upgrade to Pro for an unlimited catalog.`,
+        };
+      }
+    }
     const newBook = await db
       .insert(books)
       .values({
@@ -38,8 +48,8 @@ export const createBook = async (params: BookParams) => {
 };
 
 export const updateBook = async (id: string, params: BookParams) => {
-  const admin = await requireAdmin();
-  if (!admin.ok) return { success: false, message: admin.error };
+  const staff = await requireStaff();
+  if (!staff.ok) return { success: false, message: staff.error };
 
   try {
     const [current] = await db
@@ -87,8 +97,8 @@ export const updateBook = async (id: string, params: BookParams) => {
 };
 
 export const deleteBook = async (id: string) => {
-  const admin = await requireAdmin();
-  if (!admin.ok) return { success: false, message: admin.error };
+  const staff = await requireStaff();
+  if (!staff.ok) return { success: false, message: staff.error };
 
   try {
     const [activeBorrows] = await db
@@ -105,6 +115,7 @@ export const deleteBook = async (id: string) => {
       };
     }
 
+    await db.delete(holds).where(eq(holds.bookId, id));
     await db.delete(borrowRecords).where(eq(borrowRecords.bookId, id));
     await db.delete(books).where(eq(books.id, id));
 

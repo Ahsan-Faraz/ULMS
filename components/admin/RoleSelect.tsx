@@ -10,7 +10,7 @@ const RoleSelect = ({
   role,
 }: {
   userId: string;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "LIBRARIAN";
 }) => {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -20,7 +20,7 @@ const RoleSelect = ({
       defaultValue={role}
       disabled={pending}
       onChange={(event) => {
-        const nextRole = event.target.value as "USER" | "ADMIN";
+        const nextRole = event.target.value as "USER" | "ADMIN" | "LIBRARIAN";
         startTransition(async () => {
           const result = await updateUserRole(userId, nextRole);
           if (result.success) {
@@ -39,6 +39,7 @@ const RoleSelect = ({
       className="rounded-lg border border-light-400 bg-light-600 px-3 py-2 text-xs font-semibold text-dark-400 outline-none"
     >
       <option value="USER">User</option>
+      <option value="LIBRARIAN">Librarian</option>
       <option value="ADMIN">Admin</option>
     </select>
   );

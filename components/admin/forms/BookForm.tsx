@@ -21,12 +21,14 @@ import FileUpload from "@/components/FileUpload";
 import ColorPicker from "@/components/admin/ColorPicker";
 import { createBook, updateBook } from "@/lib/admin/actions/book";
 import { toast } from "@/hooks/use-toast";
+import IsbnLookup from "@/components/admin/IsbnLookup";
 
 interface Props extends Partial<Book> {
   type?: "create" | "update";
+  isbnEnabled?: boolean;
 }
 
-const BookForm = ({ type = "create", ...book }: Props) => {
+const BookForm = ({ type = "create", isbnEnabled = false, ...book }: Props) => {
   const router = useRouter();
   const isUpdate = type === "update";
 
@@ -42,6 +44,7 @@ const BookForm = ({ type = "create", ...book }: Props) => {
       coverUrl: book.coverUrl || "",
       coverColor: book.coverColor || "#012B48",
       videoUrl: book.videoUrl || "",
+      isbn: book.isbn || "",
       summary: book.summary || "",
     },
   });
@@ -72,6 +75,21 @@ const BookForm = ({ type = "create", ...book }: Props) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="space-y-2">
+          <p className="text-base font-normal text-dark-500">ISBN lookup</p>
+          <IsbnLookup
+            enabled={isbnEnabled}
+            onFound={(found) => {
+              form.setValue("title", found.title);
+              form.setValue("author", found.author);
+              form.setValue("description", found.description);
+              form.setValue("summary", found.summary);
+              form.setValue("coverUrl", found.coverUrl);
+              form.setValue("genre", found.genre.slice(0, 50));
+              form.setValue("isbn", found.isbn);
+            }}
+          />
+        </div>
         <FormField
           control={form.control}
           name={"title"}

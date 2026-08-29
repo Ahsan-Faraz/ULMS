@@ -66,7 +66,7 @@ const AuthForm = <T extends FieldValues>({
           : "You have successfully signed up.",
       });
 
-      router.push(result.redirectTo ?? "/");
+      router.push(result.redirectTo ?? "/home");
     } else if (result.fieldErrors) {
       Object.entries(result.fieldErrors).forEach(([name, message]) => {
         if (!message) return;

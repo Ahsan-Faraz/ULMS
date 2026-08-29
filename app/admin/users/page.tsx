@@ -7,12 +7,17 @@ import { listUsers, parseListParams } from "@/lib/admin/queries";
 import { formatDate, getInitials } from "@/lib/utils";
 import { mediaSrc } from "@/lib/admin/media";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { requireAdmin } from "@/lib/admin/guard";
+import { redirect } from "next/navigation";
 
 const Page = async ({
   searchParams,
 }: {
   searchParams: Promise<{ query?: string; page?: string; filter?: string }>;
 }) => {
+  const admin = await requireAdmin();
+  if (!admin.ok) redirect("/admin");
+
   const params = parseListParams(await searchParams);
   const { rows, total, totalPages } = await listUsers(params);
 
@@ -29,6 +34,7 @@ const Page = async ({
           options={[
             { label: "All", value: "all" },
             { label: "Admins", value: "ADMIN" },
+            { label: "Librarians", value: "LIBRARIAN" },
             { label: "Users", value: "USER" },
             { label: "Pending", value: "PENDING" },
             { label: "Approved", value: "APPROVED" },

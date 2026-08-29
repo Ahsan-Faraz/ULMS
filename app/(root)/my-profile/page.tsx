@@ -1,13 +1,21 @@
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
-import BookCard from "@/components/BookCard";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getBorrowedBooks } from "@/lib/actions/profile";
-import { formatDate } from "@/lib/utils";
-import { APP_NAME } from "@/lib/brand";
+import { formatDate, getDueLabel } from "@/lib/utils";
+import { getUserHolds, overdueFine } from "@/lib/circulation";
+import RenewButton from "@/components/RenewButton";
+import CancelHoldButton from "@/components/CancelHoldButton";
+import Link from "next/link";
+
+const roleLabel = (role?: string | null) => {
+  if (role === "ADMIN") return "Admin";
+  if (role === "LIBRARIAN") return "Librarian";
+  return "Student";
+};
 
 const Page = async () => {
   const session = await auth();
@@ -28,6 +36,8 @@ const Page = async () => {
   const borrowed = await getBorrowedBooks(session.user.id);
   const active = borrowed.filter((book) => book.borrowStatus === "BORROWED");
   const history = borrowed.filter((book) => book.borrowStatus === "RETURNED");
+  const userHolds = await getUserHolds(session.user.id);
+  const fine = active.reduce((sum, book) => sum + overdueFine(book.dueDate), 0);
 
   return (
     <section className="flex flex-col gap-12">
@@ -40,8 +50,13 @@ const Page = async () => {
           <p className="mt-2 text-light-100">{profile?.email}</p>
           <p className="mt-1 text-sm text-light-100">
             University ID {profile?.universityId} · {profile?.status} ·{" "}
-            {profile?.role === "ADMIN" ? "Admin" : "Student"}
+            {roleLabel(profile?.role)}
           </p>
+          {fine > 0 ? (
+            <p className="mt-3 text-sm font-semibold text-red-700">
+              Overdue balance ${fine}. Return those books to borrow again.
+            </p>
+          ) : null}
         </div>
 
         <form
@@ -65,17 +80,76 @@ const Page = async () => {
         </h2>
         {active.length === 0 ? (
           <p className="mt-4 text-light-100">
-            Nothing checked out yet. Browse the {APP_NAME} catalog to borrow a
-            book.
+            Nothing checked out. Browse the catalog to borrow a book.
           </p>
         ) : (
-          <ul className="book-list">
+          <ul className="mt-6 space-y-4">
             {active.map((book) => (
-              <BookCard key={book.borrowId} {...book} />
+              <li
+                key={book.borrowId}
+                className="flex flex-col gap-3 rounded-xl border border-light-400 bg-light-600 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-semibold text-dark-100">{book.title}</p>
+                  <p className="text-sm text-light-100">
+                    {getDueLabel(book.dueDate)} · Due {formatDate(book.dueDate)}
+                    {book.renewed ? " · Renewed" : ""}
+                    {overdueFine(book.dueDate) > 0
+                      ? ` · Fine $${overdueFine(book.dueDate)}`
+                      : ""}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {book.borrowId ? (
+                    <RenewButton
+                      borrowId={book.borrowId}
+                      disabled={book.renewed || overdueFine(book.dueDate) > 0}
+                    />
+                  ) : null}
+                  {book.borrowId ? (
+                    <Button asChild variant="outline" className="border-light-400">
+                      <Link href={`/receipts/${book.borrowId}`}>Receipt</Link>
+                    </Button>
+                  ) : null}
+                </div>
+              </li>
             ))}
           </ul>
         )}
       </section>
+
+      {userHolds.length > 0 ? (
+        <section>
+          <h2 className="font-serif text-4xl font-semibold text-dark-100">
+            Holds
+          </h2>
+          <ul className="mt-6 space-y-4">
+            {userHolds.map((hold) => (
+              <li
+                key={hold.id}
+                className="flex flex-col gap-3 rounded-xl border border-light-400 bg-light-600 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-semibold text-dark-100">{hold.title}</p>
+                  <p className="text-sm text-light-100">
+                    {hold.status === "READY"
+                      ? "Ready to borrow"
+                      : "Waiting for a copy"}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {hold.status === "READY" ? (
+                    <Button asChild className="bg-primary text-white">
+                      <Link href={`/books/${hold.bookId}`}>Borrow now</Link>
+                    </Button>
+                  ) : null}
+                  <CancelHoldButton holdId={hold.id} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {history.length > 0 ? (
         <section>
@@ -96,7 +170,7 @@ const Page = async () => {
                 </div>
                 {book.borrowId ? (
                   <Button asChild variant="outline" className="border-light-400">
-                    <a href={`/receipts/${book.borrowId}`}>Receipt</a>
+                    <Link href={`/receipts/${book.borrowId}`}>Receipt</Link>
                   </Button>
                 ) : null}
               </li>

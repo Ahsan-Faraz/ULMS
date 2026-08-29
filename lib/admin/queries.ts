@@ -157,7 +157,7 @@ export async function listUsers({
     );
   }
 
-  if (filter === "ADMIN" || filter === "USER") {
+  if (filter === "ADMIN" || filter === "USER" || filter === "LIBRARIAN") {
     filters.push(eq(users.role, filter));
   }
 

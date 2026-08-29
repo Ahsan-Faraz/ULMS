@@ -68,7 +68,7 @@ export async function getLibraryBooks({
   }
 
   if (genre && genre !== "all") {
-    filters.push(eq(books.genre, genre));
+    filters.push(ilike(books.genre, `%${genre}%`));
   }
 
   const where = filters.length ? and(...filters) : undefined;

@@ -17,26 +17,43 @@ export const adminSideBarLinks = [
     img: "/icons/admin/home.svg",
     route: "/admin",
     text: "Home",
+    staff: true,
   },
   {
     img: "/icons/admin/users.svg",
     route: "/admin/users",
     text: "All Users",
+    adminOnly: true,
   },
   {
     img: "/icons/admin/book.svg",
     route: "/admin/books",
     text: "All Books",
+    staff: true,
   },
   {
     img: "/icons/admin/bookmark.svg",
     route: "/admin/book-requests",
     text: "Borrow Requests",
+    staff: true,
+  },
+  {
+    img: "/icons/admin/bookmark.svg",
+    route: "/admin/checkout",
+    text: "Checkout",
+    staff: true,
   },
   {
     img: "/icons/admin/user.svg",
     route: "/admin/account-requests",
     text: "Account Requests",
+    adminOnly: true,
+  },
+  {
+    img: "/icons/admin/home.svg",
+    route: "/admin/settings",
+    text: "Settings",
+    adminOnly: true,
   },
 ];
 

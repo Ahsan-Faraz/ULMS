@@ -1,9 +1,11 @@
 "use client";
 
 import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 import AdminSearch from "@/components/admin/AdminSearch";
+import { Button } from "@/components/ui/button";
 
 const searchPlaceholder = (path: string) => {
   if (path.startsWith("/admin/users")) return "Search users by name or email";
@@ -27,9 +29,19 @@ const Header = ({ session }: { session: Session }) => {
         </p>
       </div>
 
-      <Suspense>
-        <AdminSearch placeholder={searchPlaceholder(pathname)} />
-      </Suspense>
+      <div className="flex w-full flex-col gap-3 lg:max-w-md">
+        <Suspense>
+          <AdminSearch placeholder={searchPlaceholder(pathname)} />
+        </Suspense>
+        <Button
+          type="button"
+          variant="outline"
+          className="self-end border-light-400 bg-white text-dark-400"
+          onClick={() => signOut({ callbackUrl: "/sign-in" })}
+        >
+          Logout
+        </Button>
+      </div>
     </header>
   );
 };

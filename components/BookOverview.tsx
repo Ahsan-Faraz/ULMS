@@ -5,6 +5,8 @@ import BorrowBook from "@/components/BorrowBook";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { getActiveHold, hasOverdueBlock } from "@/lib/circulation";
+import { isPro } from "@/lib/settings";
 
 interface Props extends Book {
   userId: string;
@@ -28,13 +30,31 @@ const BookOverview = async ({
     .where(eq(users.id, userId))
     .limit(1);
 
-  const borrowingEligibility = {
-    isEligible: availableCopies > 0 && user?.status === "APPROVED",
-    message:
-      availableCopies <= 0
-        ? "Book is not available"
-        : "You are not eligible to borrow this book",
-  };
+  const hold = user ? await getActiveHold(user.id, id) : null;
+  const overdue = user ? await hasOverdueBlock(user.id) : false;
+  const pro = await isPro();
+
+  let action: "borrow" | "hold" | "ready" | "blocked" = "borrow";
+  let message = "";
+
+  if (!user || user.status !== "APPROVED") {
+    action = "blocked";
+    message = "Your account is not approved yet.";
+  } else if (overdue) {
+    action = "blocked";
+    message = "Return overdue books before borrowing again.";
+  } else if (hold?.status === "READY") {
+    action = "ready";
+  } else if (hold?.status === "WAITING") {
+    action = "blocked";
+    message = "You already have a hold on this title.";
+  } else if (availableCopies <= 0) {
+    action = "hold";
+    message = pro
+      ? "No copies left. Place a hold to be next in line."
+      : "No copies left. Holds are included with Campus Pro.";
+  }
+
   return (
     <section className="book-overview">
       <div className="flex flex-1 flex-col gap-5">
@@ -67,12 +87,15 @@ const BookOverview = async ({
         </div>
 
         <p className="book-description">{description}</p>
+        {message ? <p className="text-sm text-light-100">{message}</p> : null}
 
         {user && (
           <BorrowBook
             bookId={id}
             userId={userId}
-            borrowingEligibility={borrowingEligibility}
+            action={action}
+            message={message}
+            holdIsPro={pro}
           />
         )}
       </div>

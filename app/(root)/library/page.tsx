@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import BookCard from "@/components/BookCard";
 import LibraryFilters from "@/components/LibraryFilters";
 import LibraryPagination from "@/components/LibraryPagination";
@@ -30,12 +31,14 @@ const Page = async ({
         <h1 className="library-title">Find your next book</h1>
       </div>
 
-      <LibraryFilters
-        q={params.q}
-        genre={params.genre}
-        sort={params.sort}
-        genres={genres}
-      />
+      <Suspense>
+        <LibraryFilters
+          q={params.q}
+          genre={params.genre}
+          sort={params.sort}
+          genres={genres}
+        />
+      </Suspense>
 
       <p className="mt-6 text-sm text-light-100">
         {catalog.total} {catalog.total === 1 ? "title" : "titles"}

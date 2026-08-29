@@ -15,6 +15,13 @@
       "when": 1736343290422,
       "tag": "0001_tough_lilandra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756490000000,
+      "tag": "0002_phase_two_three",
+      "breakpoints": true
     }
   ]
 }
