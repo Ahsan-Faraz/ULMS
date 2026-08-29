@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -24,11 +24,13 @@ const Layout = async ({ children }: { children: ReactNode }) => {
   if (!isAdmin) redirect("/");
 
   return (
-    <main className="flex min-h-screen w-full flex-row">
+    <main className="flex min-h-screen w-full flex-row overflow-x-hidden">
       <Sidebar session={session} />
 
       <div className="admin-container">
-        <Header session={session} />
+        <Suspense>
+          <Header session={session} />
+        </Suspense>
         {children}
       </div>
     </main>
