@@ -43,7 +43,7 @@ const BrandMark = ({
       {showWordmark ? (
         <span
           className={cn(
-            "font-ibm-plex-sans text-xl font-semibold tracking-[0.14em]",
+            "font-serif text-[1.65rem] font-semibold leading-none tracking-tight",
             variant === "light"
               ? "text-white"
               : isAdmin

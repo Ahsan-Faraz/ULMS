@@ -170,11 +170,11 @@
 
     /* Sidebar */
     .admin-sidebar {
-        @apply z-20 flex h-dvh w-[72px] shrink-0 flex-col justify-between overflow-y-auto bg-white px-2 pb-5 pt-8 md:w-[220px] md:px-4 lg:w-[264px] lg:px-5 lg:pt-10;
+        @apply z-20 flex h-dvh w-[72px] shrink-0 flex-col justify-between overflow-hidden bg-white px-2 pb-5 pt-8 md:w-[220px] md:px-4 lg:w-[264px] lg:px-5 lg:pt-10;
     }
 
     .admin-sidebar .logo {
-        @apply flex flex-row items-center gap-2 border-b border-dashed border-primary-admin/20 pb-10 max-md:justify-center;
+        @apply flex flex-row items-center gap-2 border-b border-dashed border-primary-admin/20 pb-6 max-md:justify-center;
     }
 
     .admin-sidebar .logo h1 {
@@ -182,7 +182,7 @@
     }
 
     .admin-sidebar .link {
-        @apply flex w-full flex-row items-center gap-2 rounded-lg px-3 py-3.5 max-md:justify-center lg:px-5;
+        @apply flex w-full flex-row items-center gap-2 rounded-lg px-3 py-2.5 max-md:justify-center lg:px-5;
     }
 
     .admin-sidebar .link p {
@@ -190,7 +190,7 @@
     }
 
     .admin-sidebar .user {
-        @apply my-8 flex w-full flex-row gap-2 rounded-full border border-light-400 px-6 py-2 shadow-sm max-md:px-2;
+        @apply my-0 flex w-full flex-row items-center gap-2 rounded-2xl border border-light-400 px-3 py-2 shadow-sm max-md:justify-center max-md:px-2;
     }
 
     /* User Card */
